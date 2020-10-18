@@ -1,23 +1,29 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import moment from "moment";
-import logo from './logo.svg';
-import './App.css';
-import Calendar from "./components/Calendar/calendar";
-import ModalBox from './components/Modal';
+//import "./App.css";
+import Calendar from "./components/Calendar/Calendar";
 import ReminderPage from "./components/Reminder/ReminderPage";
-   
-function App() {
-  const [value,setValue] = useState(moment());
-  const [reminder,setReminder] = useState();
-  
-  useEffect(()=>{
-    setValue(moment());
-},[reminder])
+import WeatherPage from "./components/Weather/WeatherPage";
+import Header from "./components/shared/Header";
 
-  
-  return (<div>
-    <Calendar value={value} onChange={setValue}  />
-<ReminderPage setReminder={setReminder}/>
+function App() {
+  const [value, setValue] = useState(moment());
+  const [reminder, setReminder] = useState();
+
+  useEffect(() => {
+    setValue(moment());
+  }, [reminder]);
+
+  return (
+    <div>
+      <Header title="Calendar"/>
+      <Calendar value={value} onChange={setValue}  key={value}/>
+      <WeatherPage />
+      <ReminderPage
+        setReminder={setReminder}
+        setValue={setValue}
+        value={value}
+      />
     </div>
   );
 }

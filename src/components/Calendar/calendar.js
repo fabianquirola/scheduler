@@ -1,100 +1,79 @@
-import React,{useState,useEffect} from 'react';
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import moment from "moment";
 import "../../style.css";
-import buildCalendar from "./build";
-import dayStyles,{beforeToday,numberdayStyles,isToday} from "./styles";
-import Header from "./header"
+import BuildCalendar from "./Build";
+import dayStyles, { beforeToday, numberdayStyles} from "./Styles";
+import CalendarHeader from "./CalendarHeader";
 import ListRemindersResume from "./ListRemindersResume";
+import PropTypes from "prop-types";
+import { keys } from "@material-ui/core/styles/createBreakpoints";
 
-const Calendar = ({value,onChange}) => {
-    const [calendar,setCalendar] = useState([]);
+const Calendar = ({ value, onChange }) => {
+  const [calendar, setCalendar] = useState([]);
 
-    const [icon,setIcon] = useState([]);
+  const [reminders, setReminders] = useState([]);
 
-    const [reminders,setReminders] = useState([]);
+  const filterRemainders = (day) => {
+    const remindersD = reminders.filter((reminder) =>
+      moment(reminder.datetime).isSame(day, "day")
+    );
 
-    const filterRemainders = (day) =>{
-      
-        const remindersD = reminders.filter(reminder => moment(reminder.datetime).isSame(day,'day'))
-        //console.log(remindersD);
-        return remindersD;
+    return remindersD;
+  };
+
+  useEffect(() => {
+    setCalendar(BuildCalendar(value));
+    const remindersS = localStorage.getItem("reminders");
+    if (remindersS) {
+      setReminders(JSON.parse(remindersS));
     }
+  }, [value]);
 
-
-    
-    useEffect(()=>{
-        setCalendar(buildCalendar(value));
-        setIcon(consultApi());
-        const remindersS = localStorage.getItem('reminders');
-        console.log(remindersS);
-        if(remindersS){
-            setReminders(JSON.parse(remindersS)
-          )
-        }
-    },[value])
-
-
-
-
-    
-    const consultApi = async (city='Quito',country='EC') =>{
-        
-        const appId='40823c644eafed4a6c502b7b934a10e7';
-        const url= `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${appId}`
-      
-        const response = await fetch(url);
-        const result = await response.json();
-      
-       
-        const {icon,main} = result.weather[0];
-        
-        const ricon = `<img src='http://openweathermap.org/img/wn/${icon}@2x.png' />`;
-       console.log(ricon);
-        return ricon;
-      
-      }
-
-      const verifyWheather = function (day){
-          if (isToday(day)){
-             return consultApi();
-          }
-          //return '';
-      }
-
-    
-    return (<div className="calendar">
-
-        <Header 
-        value={value} 
-        setValue={onChange}/>
+  return (
+    <div className="container">
+      <div className="calendar">
+        <CalendarHeader value={value} setValue={onChange} />
         <div className="body">
-            <div className="day-names">
-{["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map(d=><div className="week">{d}</div>)}
+          <div className="day-names">
+            {[
+              "Sunday",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+            ].map((d) => (
+              <div className="week" key={d}>{d}</div>
+            ))}
+          </div>
+          {calendar.map((week) => (
+            <div key={week}>
+              {week.map((day) => (
+                <div
+                key={day}
+                  className="day"
+                  onClick={() => !beforeToday(day) && onChange(day)}
+                >
+                  <div className={dayStyles(day, value)}>
+                    <div className={numberdayStyles(day, value)}>
+                      {day.format("D").toString()}
+                      <ListRemindersResume reminders={filterRemainders(day)} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-       {calendar.map(week=>(
-           <div>
-               {week.map(day=>(
-                   <div className="day"
-                   onClick={()=>!beforeToday(day) && onChange(day)}>
-                       <div
-                       className={dayStyles(day,value)}>
-                        <div className={numberdayStyles(day,value)}>
-                        {day.format("D").toString()}
-                        <ListRemindersResume
-                            reminders = {filterRemainders(day)}
-                            //deleteReminder={this.deleteReminder}
-                            />
-                      
-                       </div>
-                            
-                        </div>
-                       
-                   </div>
-               ))}
-           </div>
-       ))}
-       </div>
-    </div>  );
-}
- 
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Calendar.propTypes = {
+    value: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
+};
+
 export default Calendar;
