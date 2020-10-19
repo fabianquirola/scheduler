@@ -6,7 +6,6 @@ import dayStyles, { beforeToday, numberdayStyles} from "./Styles";
 import CalendarHeader from "./CalendarHeader";
 import ListRemindersResume from "./ListRemindersResume";
 import PropTypes from "prop-types";
-import { keys } from "@material-ui/core/styles/createBreakpoints";
 
 const Calendar = ({ value, onChange }) => {
   const [calendar, setCalendar] = useState([]);

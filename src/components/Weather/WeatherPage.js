@@ -20,11 +20,11 @@ const WeatherPage = ()=> {
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${appId}`;
 
       const response = await fetch(url);
-      const result = await response.json();
+      const apiresult = await response.json();
 
-      console.log(result);
+      console.log(apiresult);
 
-      setResult(result);
+      setResult(apiresult);
     };
 
     consultApi();
